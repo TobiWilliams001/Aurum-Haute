@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { Instagram } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -13,8 +14,18 @@ export default function Footer() {
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-2xl font-serif mb-4 gradient-text">Aurum Haute</h3>
-          <p className="text-sm text-cream-300">Luxury redefined for the modern woman.</p>
+          <h3 className="text-2xl font-hammersmith mb-4 gradient-text">Aurum Haute</h3>
+          <p className="text-sm text-cream-300 font-zingsans">Luxury redefined for the modern woman.</p>
+          <div className="mt-4 flex items-center">
+            <Link href="https://www.instagram.com/aurumhaute" target="_blank" rel="noopener noreferrer">
+              <button
+                className="bg-burgundy-500 text-white p-2 rounded-full hover:bg-burgundy-600 transition-colors duration-300"
+                aria-label="Follow us on Instagram"
+              >
+                <Instagram size={24} />
+              </button>
+            </Link>
+          </div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -22,22 +33,22 @@ export default function Footer() {
           transition={{ duration: 0.5, delay: 0.1 }}
           viewport={{ once: true }}
         >
-          <h4 className="text-lg font-serif mb-4 text-gold-400">Quick Links</h4>
+          <h4 className="text-lg font-zingsans mb-4 text-gold-400">Quick Links</h4>
           <ul className="space-y-2">
             <li>
-              <a href="#" className="text-sm text-cream-300 hover:text-gold-300 transition-colors">
-                About Us
-              </a>
+              <Link href="#collection" className="text-sm text-cream-300 hover:text-gold-300 transition-colors">
+                🔹 Collections
+              </Link>
             </li>
             <li>
-              <a href="#" className="text-sm text-cream-300 hover:text-gold-300 transition-colors">
-                Collections
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-sm text-cream-300 hover:text-gold-300 transition-colors">
-                How to Order
-              </a>
+              <Link
+                href={`https://wa.me/447867294989?text=${encodeURIComponent("Hi, I'd like to know more about how to order an Aurum Haute piece.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-cream-300 hover:text-gold-300 transition-colors"
+              >
+                🔹 How to Order
+              </Link>
             </li>
             <li>
               <Link
@@ -46,13 +57,18 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="text-sm text-cream-300 hover:text-gold-300 transition-colors"
               >
-                Secure Your Piece
+                🔹 Secure Your Piece
               </Link>
             </li>
             <li>
-              <a href="#" className="text-sm text-cream-300 hover:text-gold-300 transition-colors">
-                Contact
-              </a>
+              <Link
+                href={`https://wa.me/447867294989?text=${encodeURIComponent("Hi, I have an inquiry about Aurum Haute.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-cream-300 hover:text-gold-300 transition-colors"
+              >
+                🔹 Contact
+              </Link>
             </li>
           </ul>
         </motion.div>
@@ -62,8 +78,8 @@ export default function Footer() {
           transition={{ duration: 0.5, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          <h4 className="text-lg font-serif mb-4 text-gold-400">Stay Connected</h4>
-          <p className="text-sm text-cream-300 mb-4">Subscribe to our newsletter for exclusive updates and offers.</p>
+          <h4 className="text-lg font-zingsans mb-4 text-gold-400">Stay Connected</h4>
+          <p className="text-sm text-cream-300 mb-4">Be the first to access exclusive releases and offers.</p>
           <form className="flex">
             <input
               type="email"
