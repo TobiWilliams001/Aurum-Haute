@@ -1,19 +1,15 @@
 import "./globals.css"
-import { Cormorant_Garamond, Montserrat } from "next/font/google"
+import { Hammersmith_One, Montserrat } from "next/font/google"
 import type React from "react"
 import Script from "next/script"
 import { ThemeProvider } from "./components/ThemeProvider"
 
-// const cormorantGaramond = Cormorant_Garamond({
-//   subsets: ["latin"],
-//   variable: "--font-serif",
-//   display: "swap",
-// })
-
-const cormorantGaramond = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: '400', 
-});
+const hammersmithOne = Hammersmith_One({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-hammersmith",
+  display: "swap",
+})
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -32,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${cormorantGaramond.variable} ${montserrat.variable}`}>
+    <html lang="en" className={`${hammersmithOne.variable} ${montserrat.variable}`}>
       <body className={`font-sans antialiased bg-texture`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
