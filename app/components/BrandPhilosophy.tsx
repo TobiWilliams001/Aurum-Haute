@@ -5,11 +5,19 @@ import { Diamond, Crown, Sparkles } from "lucide-react"
 import Link from "next/link"
 
 const features = [
-  { title: "Luxury in Every Detail", description: "Crafted from rich velvet, designed with precision.", icon: Diamond },
-  { title: "Exclusivity", description: "Each drop is limited. No overproduction. No compromises.", icon: Crown },
+  {
+    title: "Luxury in Every Detail",
+    description: "Rich, plush velvet. Impeccable craftsmanship. Designed for those who move with quiet confidence.",
+    icon: Diamond,
+  },
+  {
+    title: "Exclusivity, Redefined",
+    description: "Each drop is limited—crafted in small batches. No excess. No overproduction. No compromises.",
+    icon: Crown,
+  },
   {
     title: "Effortless Sophistication",
-    description: "A bag that fits seamlessly into your world—whether power dressing or casual luxury.",
+    description: "From power dressing to casual luxury, an Aurum Haute bag fits seamlessly into your world.",
     icon: Sparkles,
   },
 ]
@@ -32,9 +40,10 @@ export default function BrandPhilosophy() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
-          className="text-lg md:text-xl lg:text-2xl mb-16 font-light text-burgundy-800 dark:text-cream-200 max-w-3xl mx-auto"
+          className="text-lg md:text-xl lg:text-2xl mb-16 font-zingsans text-burgundy-800 dark:text-cream-200 max-w-3xl mx-auto"
         >
-          Not just a bag. A statement. Aurum Haute is a celebration of timeless elegance.
+          More than a bag. A statement. Aurum Haute embodies timeless elegance, subtle confidence, and an uncompromising
+          standard of luxury.
         </motion.p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
           {features.map((feature, index) => (
@@ -47,7 +56,7 @@ export default function BrandPhilosophy() {
               className="modern-card p-8"
             >
               <feature.icon className="w-12 h-12 mx-auto mb-4 text-gold-500" />
-              <h3 className="text-xl md:text-2xl font-serif mb-4 text-burgundy-800 dark:text-cream-100">
+              <h3 className="text-xl md:text-2xl font-zingsans mb-4 text-burgundy-800 dark:text-cream-100">
                 {feature.title}
               </h3>
               <p className="text-burgundy-700 dark:text-cream-200">{feature.description}</p>
