@@ -1,6 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from 'next/link';
+
 
 const features = ["Soft, yet structured.", "Classic, yet modern.", "Refined, yet expressive."]
 
@@ -50,6 +52,7 @@ export default function WhyVelvet() {
             </motion.div>
           ))}
         </div>
+        <Link href="/craftsmanship">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -57,6 +60,7 @@ export default function WhyVelvet() {
         >
           Experience the Craftsmanship
         </motion.button>
+        </Link>
       </div>
     </section>
   )
