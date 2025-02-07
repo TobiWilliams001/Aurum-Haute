@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useTheme } from "../hooks/useTheme"
-import { Sun, Moon } from "lucide-react"
+import { Sun, Moon, Instagram } from "lucide-react"
 import Link from "next/link"
 
 export default function Hero() {
@@ -25,10 +25,12 @@ export default function Hero() {
         transition={{ duration: 1, ease: "easeOut" }}
         className="relative text-center text-white z-20 px-4 max-w-4xl"
       >
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif mb-4 tracking-wider gradient-text">Aurum Haute</h1>
-        <p className="text-xl md:text-2xl mb-8 font-light tracking-wide text-gold-100">Elegance Redefined</p>
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif mb-12 tracking-wide max-w-3xl mx-auto text-cream-100">
-          Luxury velvet handbags crafted for the modern woman who knows her presence is enough.
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-hammersmith mb-4 tracking-wider gradient-text">
+          Aurum Haute
+        </h1>
+        <p className="text-xl md:text-2xl mb-4 font-zingrust text-gold-100">For the Modern Woman</p>
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-zingsans mb-12 tracking-wide max-w-3xl mx-auto text-cream-100">
+          Velvet craftsmanship for the modern woman. Because presence speaks louder than words.
         </h2>
         <Link href={`https://wa.me/447867294989?text=${waitlistMessage}`} target="_blank" rel="noopener noreferrer">
           <motion.button
@@ -39,13 +41,23 @@ export default function Hero() {
             Join the Waitlist
           </motion.button>
         </Link>
-        <button
-          onClick={toggleTheme}
-          className="ml-4 bg-burgundy-500 text-white p-2 rounded-full hover:bg-burgundy-600 transition-colors duration-300"
-          aria-label={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        >
-          {theme === "dark" ? <Sun size={24} /> : <Moon size={24} />}
-        </button>
+        <div className="mt-8 flex justify-center items-center space-x-4">
+          <button
+            onClick={toggleTheme}
+            className="bg-burgundy-500 text-white p-2 rounded-full hover:bg-burgundy-600 transition-colors duration-300"
+            aria-label={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {theme === "dark" ? <Sun size={24} /> : <Moon size={24} />}
+          </button>
+          <Link href="https://www.instagram.com/aurumhaute" target="_blank" rel="noopener noreferrer">
+            <button
+              className="bg-burgundy-500 text-white p-2 rounded-full hover:bg-burgundy-600 transition-colors duration-300"
+              aria-label="Follow us on Instagram"
+            >
+              <Instagram size={24} />
+            </button>
+          </Link>
+        </div>
       </motion.div>
     </section>
   )
