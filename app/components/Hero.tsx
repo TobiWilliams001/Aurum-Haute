@@ -30,8 +30,7 @@ export default function Hero() {
         </h1>
         <p className="text-xl md:text-2xl mb-4 font-zingrust text-gold-100">For the Modern Woman</p>
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-zingsans mb-12 tracking-wide max-w-3xl mx-auto text-cream-100">
-          Velvet craftsmanship for the modern woman. Because presence speaks louder than words.
-        </h2>
+        Luxury velvet handbags crafted for the modern woman who knows her presence is enough.        </h2>
         <Link href={`https://wa.me/447867294989?text=${waitlistMessage}`} target="_blank" rel="noopener noreferrer">
           <motion.button
             whileHover={{ scale: 1.05 }}
