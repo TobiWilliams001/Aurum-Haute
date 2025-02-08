@@ -190,12 +190,12 @@
 
 @media (pointer: fine) {
   * {
-    cursor: none;
+    cursor: auto;
   }
 
   a,
   button {
-    cursor: none;
+    cursor: pointer;
   }
 }
 
