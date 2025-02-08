@@ -34,11 +34,10 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
   }
 
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 150) {
+    const swipeThreshold = 30 // Reduced from 50 for increased sensitivity
+    if (touchStart - touchEnd > swipeThreshold) {
       handleNext()
-    }
-
-    if (touchStart - touchEnd < -150) {
+    } else if (touchStart - touchEnd < -swipeThreshold) {
       handlePrevious()
     }
   }
@@ -67,7 +66,7 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center cursor-auto"
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
           onClick={onClose}
         >
           <div className="absolute top-4 right-4 z-50">
@@ -80,7 +79,7 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
               e.stopPropagation()
               handlePrevious()
             }}
-            className="absolute left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+            className="absolute left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300 ease-in-out transform hover:scale-110"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
@@ -89,7 +88,7 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
               e.stopPropagation()
               handleNext()
             }}
-            className="absolute right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+            className="absolute right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300 ease-in-out transform hover:scale-110"
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
@@ -103,13 +102,13 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="crossfade">
               <motion.div
                 key={currentIndex}
-                initial={{ opacity: 0, x: 300 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -300 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="h-full"
               >
                 <Image
@@ -122,7 +121,7 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
                 />
               </motion.div>
             </AnimatePresence>
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 md:hidden">
               {images.map((_, index) => (
                 <button
                   key={index}
