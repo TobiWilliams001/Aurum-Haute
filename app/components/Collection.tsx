@@ -49,49 +49,39 @@ export default function Collection() {
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null)
   const [currentImageIndexes, setCurrentImageIndexes] = useState<{ [key: number]: number }>({})
   const [galleryOpen, setGalleryOpen] = useState(false)
+  const [isHovering, setIsHovering] = useState<{ [key: number]: boolean }>({})
 
   const handleMouseEnter = useCallback((productId: number) => {
-    const intervalId = setInterval(() => {
-      setCurrentImageIndexes((prev) => ({
-        ...prev,
-        [productId]: (prev[productId] || 0) + 1 < products[productId - 1].images.length ? prev[productId] + 1 : 0,
-      }))
-    }, 1500) // Change image every 1.5 seconds
-
-    return () => clearInterval(intervalId)
+    setIsHovering((prev) => ({ ...prev, [productId]: true }))
   }, [])
+
+  const handleMouseLeave = useCallback((productId: number) => {
+    setIsHovering((prev) => ({ ...prev, [productId]: false }))
+  }, [])
+
+  useEffect(() => {
+    const intervalIds: { [key: number]: NodeJS.Timeout } = {}
+
+    products.forEach((product) => {
+      if (isHovering[product.id]) {
+        intervalIds[product.id] = setInterval(() => {
+          setCurrentImageIndexes((prev) => ({
+            ...prev,
+            [product.id]: (prev[product.id] || 0) + 1 < product.images.length ? prev[product.id] + 1 : 0,
+          }))
+        }, 2000) // Change image every 2 seconds for a smoother experience
+      }
+    })
+
+    return () => {
+      Object.values(intervalIds).forEach(clearInterval)
+    }
+  }, [isHovering])
 
   const handleProductClick = useCallback((productId: number) => {
     setSelectedProduct(productId - 1)
     setGalleryOpen(true)
   }, [])
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (galleryOpen) {
-        if (e.key === "ArrowLeft") {
-          setCurrentImageIndexes((prev) => ({
-            ...prev,
-            [selectedProduct + 1]:
-              prev[selectedProduct + 1] > 0
-                ? prev[selectedProduct + 1] - 1
-                : products[selectedProduct].images.length - 1,
-          }))
-        } else if (e.key === "ArrowRight") {
-          setCurrentImageIndexes((prev) => ({
-            ...prev,
-            [selectedProduct + 1]:
-              (prev[selectedProduct + 1] || 0) + 1 < products[selectedProduct].images.length
-                ? prev[selectedProduct + 1] + 1
-                : 0,
-          }))
-        }
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [galleryOpen, selectedProduct])
 
   return (
     <section id="collection" className="py-24 px-4 bg-cream-50 dark:bg-burgundy-950">
@@ -122,28 +112,30 @@ export default function Collection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white dark:bg-burgundy-900 p-8 rounded-lg luxury-shadow hover-lift"
+              whileHover={{ y: -10 }}
+              className="bg-white dark:bg-burgundy-900 p-8 rounded-lg luxury-shadow transition-all duration-300 ease-in-out"
             >
               <div
                 className="relative h-96 mb-6 overflow-hidden rounded-lg cursor-pointer"
                 onMouseEnter={() => handleMouseEnter(product.id)}
+                onMouseLeave={() => handleMouseLeave(product.id)}
                 onClick={() => handleProductClick(product.id)}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 z-10"></div>
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="crossfade">
                   <motion.div
                     key={currentImageIndexes[product.id] || 0}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.8, ease: "easeInOut" }}
                     className="absolute inset-0"
                   >
                     <Image
                       src={product.images[currentImageIndexes[product.id] || 0]}
                       alt={product.name}
                       fill
-                      className="object-cover transition-transform duration-700 hover:scale-105"
+                      className="object-cover transition-transform duration-700 ease-in-out hover:scale-105"
                       priority={index === 0}
                     />
                   </motion.div>
@@ -159,10 +151,16 @@ export default function Collection() {
                   ))}
                 </div>
               </div>
-              <h3 className="text-2xl font-zingsans mb-2 text-burgundy-800 dark:text-cream-100">{product.name}</h3>
-              <p className="text-burgundy-700 dark:text-cream-200 mb-4">{product.description}</p>
-              <p className="text-burgundy-600 dark:text-cream-300 mb-4">🔹 {product.feature}</p>
-              <p className="text-2xl font-zingsans mb-6 text-gold-500">£{product.price}</p>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <h3 className="text-2xl font-zingsans mb-2 text-burgundy-800 dark:text-cream-100">{product.name}</h3>
+                <p className="text-burgundy-700 dark:text-cream-200 mb-4">{product.description}</p>
+                <p className="text-burgundy-600 dark:text-cream-300 mb-4">🔹 {product.feature}</p>
+                <p className="text-2xl font-zingsans mb-6 text-gold-500">£{product.price}</p>
+              </motion.div>
               <Link
                 href={`https://wa.me/447867294989?text=${encodeURIComponent(`Hi, I'd like to order the ${product.name}. How do I proceed?`)}`}
                 target="_blank"
