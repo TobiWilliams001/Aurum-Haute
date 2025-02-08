@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback, useEffect } from "react"
 import Image from "next/image"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import ImageGallery from "./ImageGallery"
 
@@ -28,9 +28,7 @@ const products = [
     images: [
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/5-TOU39paxJwoVRyR8fQLEmOKhwXjPYK.png",
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9-cHfiQJil7aD5PBLwVHRvp61eWQGPFf.png",
-       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/10-rFHxiqriX8miro0u8RWRlcM0cBszCy.png",
-
-      
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/10-rFHxiqriX8miro0u8RWRlcM0cBszCy.png",
     ],
   },
   {
@@ -41,9 +39,8 @@ const products = [
     price: 399,
     images: [
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/6-sgT5bnVGXRTWXcM7S8r12v7TrpNdlB.png",
-       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/8-I3KH6cry5jW278q9dXy4DN8WUmj9hB.png",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/8-I3KH6cry5jW278q9dXy4DN8WUmj9hB.png",
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/7-dK70PjivhtcLHiHPREsGr9UrFOmgiJ.png",
-     
     ],
   },
 ]
@@ -53,17 +50,48 @@ export default function Collection() {
   const [currentImageIndexes, setCurrentImageIndexes] = useState<{ [key: number]: number }>({})
   const [galleryOpen, setGalleryOpen] = useState(false)
 
-  const handleMouseEnter = (productId: number) => {
-    setCurrentImageIndexes((prev) => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1 < products[productId - 1].images.length ? prev[productId] + 1 : 0,
-    }))
-  }
+  const handleMouseEnter = useCallback((productId: number) => {
+    const intervalId = setInterval(() => {
+      setCurrentImageIndexes((prev) => ({
+        ...prev,
+        [productId]: (prev[productId] || 0) + 1 < products[productId - 1].images.length ? prev[productId] + 1 : 0,
+      }))
+    }, 1500) // Change image every 1.5 seconds
 
-  const handleProductClick = (productId: number) => {
+    return () => clearInterval(intervalId)
+  }, [])
+
+  const handleProductClick = useCallback((productId: number) => {
     setSelectedProduct(productId - 1)
     setGalleryOpen(true)
-  }
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (galleryOpen) {
+        if (e.key === "ArrowLeft") {
+          setCurrentImageIndexes((prev) => ({
+            ...prev,
+            [selectedProduct + 1]:
+              prev[selectedProduct + 1] > 0
+                ? prev[selectedProduct + 1] - 1
+                : products[selectedProduct].images.length - 1,
+          }))
+        } else if (e.key === "ArrowRight") {
+          setCurrentImageIndexes((prev) => ({
+            ...prev,
+            [selectedProduct + 1]:
+              (prev[selectedProduct + 1] || 0) + 1 < products[selectedProduct].images.length
+                ? prev[selectedProduct + 1] + 1
+                : 0,
+          }))
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [galleryOpen, selectedProduct])
 
   return (
     <section id="collection" className="py-24 px-4 bg-cream-50 dark:bg-burgundy-950">
@@ -102,21 +130,24 @@ export default function Collection() {
                 onClick={() => handleProductClick(product.id)}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 z-10"></div>
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  initial={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  key={currentImageIndexes[product.id] || 0}
-                  className="absolute inset-0"
-                >
-                  <Image
-                    src={product.images[currentImageIndexes[product.id] || 0]}
-                    alt={product.name}
-                    fill
-                    className="object-cover transition-transform duration-700 hover:scale-105"
-                    priority={index === 0}
-                  />
-                </motion.div>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentImageIndexes[product.id] || 0}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={product.images[currentImageIndexes[product.id] || 0]}
+                      alt={product.name}
+                      fill
+                      className="object-cover transition-transform duration-700 hover:scale-105"
+                      priority={index === 0}
+                    />
+                  </motion.div>
+                </AnimatePresence>
                 <div className="absolute bottom-4 left-4 right-4 flex justify-center gap-2 z-20">
                   {product.images.map((_, imgIndex) => (
                     <div
