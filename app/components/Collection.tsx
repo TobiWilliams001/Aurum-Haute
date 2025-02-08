@@ -1,10 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { Star, ZoomIn } from "lucide-react"
-import { useState } from "react"
+import ImageGallery from "./ImageGallery"
 
 const products = [
   {
@@ -12,30 +12,58 @@ const products = [
     name: "The Burgundy Classic",
     description: "A deep, bold statement. Rich velvet, gold-plated accents, and refined structure.",
     feature: "A timeless color that speaks of confidence and elegance.",
-    price: "£1,299",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/3-SkE9RWPcR8kAFrpRBMDadpxjXPtPnY.png",
+    price: 399,
+    images: [
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/2-sP94bwmrUK3SeWd5U9DAdBVC6fH979.png",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/3-KxHTPWGboMdjnWBrlEqks1Z0Hh3vey.png",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/4-btH0GhOwhuwOZsas7bHg6nWwTXF8lc.png",
+    ],
   },
   {
     id: 2,
     name: "The Midnight Blue Classic",
     description: "Effortless luxury. A subtle yet striking presence in deep midnight blue.",
     feature: "For those who redefine sophistication in their own way.",
-    price: "£1,299",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/4-cx6McsPJCMUJRgskYOKj3ZZRnxJvr5.png",
+    price: 399,
+    images: [
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/5-TOU39paxJwoVRyR8fQLEmOKhwXjPYK.png",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9-cHfiQJil7aD5PBLwVHRvp61eWQGPFf.png",
+       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/10-rFHxiqriX8miro0u8RWRlcM0cBszCy.png",
+
+      
+    ],
   },
   {
     id: 3,
     name: "The Black Classic",
     description: "Understated power. The ultimate in quiet luxury—bold yet restrained.",
     feature: "A staple piece for every wardrobe.",
-    price: "£1,299",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Ecommerce%20Hand%20Bag%20Product%20Features%20Instagram%20Post%20(2)-3ewGrm89dfeVsXzewoQb9BeK3HapXo.png",
+    price: 399,
+    images: [
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/6-sgT5bnVGXRTWXcM7S8r12v7TrpNdlB.png",
+       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/8-I3KH6cry5jW278q9dXy4DN8WUmj9hB.png",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/7-dK70PjivhtcLHiHPREsGr9UrFOmgiJ.png",
+     
+    ],
   },
 ]
 
 export default function Collection() {
-  const [hoveredId, setHoveredId] = useState<number | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<number | null>(null)
+  const [currentImageIndexes, setCurrentImageIndexes] = useState<{ [key: number]: number }>({})
+  const [galleryOpen, setGalleryOpen] = useState(false)
+
+  const handleMouseEnter = (productId: number) => {
+    setCurrentImageIndexes((prev) => ({
+      ...prev,
+      [productId]: (prev[productId] || 0) + 1 < products[productId - 1].images.length ? prev[productId] + 1 : 0,
+    }))
+  }
+
+  const handleProductClick = (productId: number) => {
+    setSelectedProduct(productId - 1)
+    setGalleryOpen(true)
+  }
 
   return (
     <section id="collection" className="py-24 px-4 bg-cream-50 dark:bg-burgundy-950">
@@ -67,74 +95,75 @@ export default function Collection() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="bg-white dark:bg-burgundy-900 p-8 rounded-lg luxury-shadow hover-lift"
-              onMouseEnter={() => setHoveredId(product.id)}
-              onMouseLeave={() => setHoveredId(null)}
             >
-              <div className="relative group">
-                <div className="relative h-80 mb-6 overflow-hidden rounded-lg bg-gradient-to-b from-cream-100 to-cream-200 dark:from-burgundy-800 dark:to-burgundy-900">
-                  <div className="absolute inset-0 bg-black/5 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div
+                className="relative h-96 mb-6 overflow-hidden rounded-lg cursor-pointer"
+                onMouseEnter={() => handleMouseEnter(product.id)}
+                onClick={() => handleProductClick(product.id)}
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 z-10"></div>
+                <motion.div
+                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  key={currentImageIndexes[product.id] || 0}
+                  className="absolute inset-0"
+                >
                   <Image
-                    src={product.image || "/placeholder.svg"}
+                    src={product.images[currentImageIndexes[product.id] || 0]}
                     alt={product.name}
-                    width={400}
-                    height={400}
-                    className="object-contain w-full h-full transition-all duration-700 transform group-hover:scale-110"
-                    style={{
-                      filter: hoveredId === product.id ? "contrast(1.1) brightness(1.05)" : "none",
-                      willChange: "transform",
-                    }}
+                    fill
+                    className="object-cover transition-transform duration-700 hover:scale-105"
+                    priority={index === 0}
                   />
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: hoveredId === product.id ? 1 : 0 }}
-                    className="absolute inset-0 flex items-center justify-center bg-black/20 dark:bg-white/10 transition-opacity duration-300"
-                  >
-                    <ZoomIn className="w-8 h-8 text-white/90" />
-                  </motion.div>
-                </div>
-                <div className="absolute top-4 right-4">
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="bg-gold-500/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg"
-                  >
-                    <span className="text-burgundy-950 font-semibold">{product.price}</span>
-                  </motion.div>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <h3 className="text-2xl font-zingsans text-burgundy-800 dark:text-cream-100">{product.name}</h3>
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 fill-gold-500 text-gold-500 transition-transform duration-300 hover:scale-110"
+                </motion.div>
+                <div className="absolute bottom-4 left-4 right-4 flex justify-center gap-2 z-20">
+                  {product.images.map((_, imgIndex) => (
+                    <div
+                      key={imgIndex}
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        imgIndex === (currentImageIndexes[product.id] || 0) ? "bg-gold-500" : "bg-cream-200/50"
+                      }`}
                     />
                   ))}
                 </div>
-                <p className="text-burgundy-700 dark:text-cream-200">{product.description}</p>
-                <p className="text-burgundy-600 dark:text-cream-300 italic">🔹 {product.feature}</p>
-                <div className="pt-4">
-                  <Link
-                    href={`https://wa.me/447867294989?text=${encodeURIComponent(`Hi, I'd like to order the ${product.name}. How do I proceed?`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="bg-gold-500 text-burgundy-950 px-6 py-3 text-sm uppercase tracking-widest hover:bg-gold-400 transition-all duration-300 w-full rounded-sm shadow-lg hover:shadow-xl relative overflow-hidden group"
-                    >
-                      <span className="relative z-10">Secure Yours Now</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-gold-400 to-gold-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-                    </motion.button>
-                  </Link>
-                </div>
               </div>
+              <h3 className="text-2xl font-zingsans mb-2 text-burgundy-800 dark:text-cream-100">{product.name}</h3>
+              <p className="text-burgundy-700 dark:text-cream-200 mb-4">{product.description}</p>
+              <p className="text-burgundy-600 dark:text-cream-300 mb-4">🔹 {product.feature}</p>
+              <p className="text-2xl font-zingsans mb-6 text-gold-500">£{product.price}</p>
+              <Link
+                href={`https://wa.me/447867294989?text=${encodeURIComponent(`Hi, I'd like to order the ${product.name}. How do I proceed?`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gold-500 text-burgundy-950 px-6 py-3 text-sm uppercase tracking-widest hover:bg-gold-400 transition-colors duration-300 w-full rounded-sm font-medium"
+                >
+                  Secure Yours Now
+                </motion.button>
+              </Link>
             </motion.div>
           ))}
         </div>
       </div>
+
+      {selectedProduct !== null && (
+        <ImageGallery
+          images={products[selectedProduct].images}
+          isOpen={galleryOpen}
+          onClose={() => setGalleryOpen(false)}
+          currentIndex={currentImageIndexes[selectedProduct + 1] || 0}
+          onIndexChange={(index) =>
+            setCurrentImageIndexes((prev) => ({
+              ...prev,
+              [selectedProduct + 1]: index,
+            }))
+          }
+        />
+      )}
     </section>
   )
 }
