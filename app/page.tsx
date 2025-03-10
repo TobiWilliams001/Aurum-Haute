@@ -5,9 +5,10 @@ import Hero from "./components/Hero"
 import BrandPhilosophy from "./components/BrandPhilosophy"
 import Collection from "./components/Collection"
 import WhyVelvet from "./components/WhyVelvet"
-import HowToOrder from "./components/HowToOrder"
+import OrderSection from "./components/OrderSection"
 import SocialProof from "./components/SocialProof"
-import FinalCTA from "./components/FinalCTA"
+import FaqSection from "./components/FaqSection"
+import FinalCta from "./components/FinalCta"
 import Footer from "./components/Footer"
 import CustomCursor from "./components/CustomCursor"
 import ParallaxText from "./components/ParallaxText"
@@ -31,10 +32,11 @@ export default function Home() {
       <BrandPhilosophy />
       <Collection />
       <ParallaxText baseVelocity={-5}>Elegance in Every Detail</ParallaxText>
+      <OrderSection />
       <WhyVelvet />
-      <HowToOrder />
       <SocialProof />
-      <FinalCTA />
+      <FaqSection />
+      <FinalCta />
       <Footer />
     </main>
   )
