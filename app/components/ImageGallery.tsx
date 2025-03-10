@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useCallback, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
@@ -34,7 +36,7 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
   }
 
   const handleTouchEnd = () => {
-    const swipeThreshold = 30 // Reduced from 50 for increased sensitivity
+    const swipeThreshold = 25 // More sensitive threshold for better mobile experience
     if (touchStart - touchEnd > swipeThreshold) {
       handleNext()
     } else if (touchStart - touchEnd < -swipeThreshold) {
@@ -66,11 +68,16 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
           onClick={onClose}
         >
           <div className="absolute top-4 right-4 z-50">
-            <button onClick={onClose} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
+            <button
+              onClick={onClose}
+              className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300"
+              aria-label="Close gallery"
+            >
               <X className="w-6 h-6 text-white" />
             </button>
           </div>
@@ -79,7 +86,8 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
               e.stopPropagation()
               handlePrevious()
             }}
-            className="absolute left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300 ease-in-out transform hover:scale-110"
+            className="absolute left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300 transform hover:scale-110"
+            aria-label="Previous image"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
@@ -88,27 +96,29 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
               e.stopPropagation()
               handleNext()
             }}
-            className="absolute right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300 ease-in-out transform hover:scale-110"
+            className="absolute right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all duration-300 transform hover:scale-110"
+            aria-label="Next image"
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
           <motion.div
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.9 }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="relative w-full max-w-4xl h-[80vh] mx-4"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <AnimatePresence mode="crossfade">
+            <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
                 className="h-full"
               >
                 <Image
@@ -121,14 +131,16 @@ export default function ImageGallery({ images, isOpen, onClose, currentIndex, on
                 />
               </motion.div>
             </AnimatePresence>
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 md:hidden">
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 md:hidden">
               {images.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => onIndexChange(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentIndex ? "bg-white" : "bg-white/50"
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    index === currentIndex ? "bg-white scale-110" : "bg-white/40"
                   }`}
+                  aria-label={`Go to image ${index + 1}`}
+                  aria-current={index === currentIndex ? "true" : "false"}
                 />
               ))}
             </div>

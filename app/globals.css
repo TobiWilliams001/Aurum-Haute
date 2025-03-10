@@ -197,6 +197,15 @@
   button {
     cursor: pointer;
   }
+
+  /* Ensure cursor visibility in lightbox */
+  .fixed.inset-0.bg-black\/90 * {
+    cursor: pointer !important;
+  }
+
+  .fixed.inset-0.bg-black\/90 img {
+    cursor: default !important;
+  }
 }
 
 @media (max-width: 768px) {

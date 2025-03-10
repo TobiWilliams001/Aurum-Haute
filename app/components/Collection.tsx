@@ -1,18 +1,20 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import { Check } from "lucide-react"
 import ImageGallery from "./ImageGallery"
 
 const products = [
   {
     id: 1,
     name: "The Burgundy Classic",
-    description: "A deep, bold statement. Rich velvet, gold-plated accents, and refined structure.",
+    description:
+      "Soft, structured, and effortlessly stylish—crafted with premium velvet and gold-plated accents for a timeless statement.",
     feature: "A timeless color that speaks of confidence and elegance.",
-    price: 399,
+    price: "£399 | ₦650,000",
     images: [
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/2-sP94bwmrUK3SeWd5U9DAdBVC6fH979.png",
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/3-KxHTPWGboMdjnWBrlEqks1Z0Hh3vey.png",
@@ -22,9 +24,10 @@ const products = [
   {
     id: 2,
     name: "The Midnight Blue Classic",
-    description: "Effortless luxury. A subtle yet striking presence in deep midnight blue.",
+    description:
+      "Soft, structured, and effortlessly stylish—crafted with premium velvet and gold-plated accents for a timeless statement.",
     feature: "For those who redefine sophistication in their own way.",
-    price: 399,
+    price: "£399 | ₦650,000",
     images: [
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/5-TOU39paxJwoVRyR8fQLEmOKhwXjPYK.png",
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9-cHfiQJil7aD5PBLwVHRvp61eWQGPFf.png",
@@ -34,9 +37,10 @@ const products = [
   {
     id: 3,
     name: "The Black Classic",
-    description: "Understated power. The ultimate in quiet luxury—bold yet restrained.",
+    description:
+      "Soft, structured, and effortlessly stylish—crafted with premium velvet and gold-plated accents for a timeless statement.",
     feature: "A staple piece for every wardrobe.",
-    price: 399,
+    price: "£399 | ₦650,000",
     images: [
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/6-sgT5bnVGXRTWXcM7S8r12v7TrpNdlB.png",
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/8-I3KH6cry5jW278q9dXy4DN8WUmj9hB.png",
@@ -46,41 +50,56 @@ const products = [
 ]
 
 export default function Collection() {
-  const [selectedProduct, setSelectedProduct] = useState<number | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<number>(0)
   const [currentImageIndexes, setCurrentImageIndexes] = useState<{ [key: number]: number }>({})
   const [galleryOpen, setGalleryOpen] = useState(false)
   const [isHovering, setIsHovering] = useState<{ [key: number]: boolean }>({})
+  const intervalRefs = useRef<{ [key: number]: NodeJS.Timeout }>({})
+
+  const product = products[selectedProduct]
 
   const handleMouseEnter = useCallback((productId: number) => {
     setIsHovering((prev) => ({ ...prev, [productId]: true }))
+
+    // Clear any existing interval
+    if (intervalRefs.current[productId]) {
+      clearInterval(intervalRefs.current[productId])
+    }
+
+    // Set new interval with a smoother transition time
+    intervalRefs.current[productId] = setInterval(() => {
+      setCurrentImageIndexes((prev) => {
+        const currentIndex = prev[productId] || 0
+        const nextIndex = (currentIndex + 1) % products.find((p) => p.id === productId)!.images.length
+        return { ...prev, [productId]: nextIndex }
+      })
+    }, 2500) // Slower transition (2.5 seconds) for a more elegant experience
   }, [])
 
   const handleMouseLeave = useCallback((productId: number) => {
     setIsHovering((prev) => ({ ...prev, [productId]: false }))
-  }, [])
 
-  useEffect(() => {
-    const intervalIds: { [key: number]: NodeJS.Timeout } = {}
-
-    products.forEach((product) => {
-      if (isHovering[product.id]) {
-        intervalIds[product.id] = setInterval(() => {
-          setCurrentImageIndexes((prev) => ({
-            ...prev,
-            [product.id]: (prev[product.id] || 0) + 1 < product.images.length ? prev[product.id] + 1 : 0,
-          }))
-        }, 2000) // Change image every 2 seconds for a smoother experience
-      }
-    })
-
-    return () => {
-      Object.values(intervalIds).forEach(clearInterval)
+    // Clear interval when mouse leaves
+    if (intervalRefs.current[productId]) {
+      clearInterval(intervalRefs.current[productId])
+      delete intervalRefs.current[productId]
     }
-  }, [isHovering])
+  }, [])
 
   const handleProductClick = useCallback((productId: number) => {
     setSelectedProduct(productId - 1)
     setGalleryOpen(true)
+  }, [])
+
+  const handleColorChange = (index: number) => {
+    setSelectedProduct(index)
+  }
+
+  // Clean up all intervals on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(intervalRefs.current).forEach(clearInterval)
+    }
   }, [])
 
   return (
@@ -104,95 +123,142 @@ export default function Collection() {
         >
           🔹 One Signature Design, Three Timeless Colors.
         </motion.p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {products.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10 }}
-              className="bg-white dark:bg-burgundy-900 p-8 rounded-lg luxury-shadow transition-all duration-300 ease-in-out"
-            >
-              <div
-                className="relative h-96 mb-6 overflow-hidden rounded-lg cursor-pointer"
-                onMouseEnter={() => handleMouseEnter(product.id)}
-                onMouseLeave={() => handleMouseLeave(product.id)}
-                onClick={() => handleProductClick(product.id)}
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 z-10"></div>
-                <AnimatePresence mode="crossfade">
-                  <motion.div
-                    key={currentImageIndexes[product.id] || 0}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                  >
-                    <Image
-                      src={product.images[currentImageIndexes[product.id] || 0]}
-                      alt={product.name}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-in-out hover:scale-105"
-                      priority={index === 0}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-                <div className="absolute bottom-4 left-4 right-4 flex justify-center gap-2 z-20">
-                  {product.images.map((_, imgIndex) => (
-                    <div
-                      key={imgIndex}
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        imgIndex === (currentImageIndexes[product.id] || 0) ? "bg-gold-500" : "bg-cream-200/50"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="relative aspect-square"
+            onMouseEnter={() => handleMouseEnter(product.id)}
+            onMouseLeave={() => handleMouseLeave(product.id)}
+            onClick={() => handleProductClick(product.id)}
+          >
+            <AnimatePresence mode="wait">
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                key={currentImageIndexes[product.id] || 0}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className="relative aspect-square rounded-lg overflow-hidden shadow-2xl cursor-pointer"
               >
-                <h3 className="text-2xl font-zingsans mb-2 text-burgundy-800 dark:text-cream-100">{product.name}</h3>
-                <p className="text-burgundy-700 dark:text-cream-200 mb-4">{product.description}</p>
-                <p className="text-burgundy-600 dark:text-cream-300 mb-4">🔹 {product.feature}</p>
-                <p className="text-2xl font-zingsans mb-6 text-gold-500">£{product.price}</p>
+                <Image
+                  src={product.images[currentImageIndexes[product.id] || 0] || "/placeholder.svg"}
+                  alt={product.name}
+                  fill
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  priority
+                />
               </motion.div>
-              <Link
-                href={`https://wa.me/447867294989?text=${encodeURIComponent(`Hi, I'd like to order the ${product.name}. How do I proceed?`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+            </AnimatePresence>
+
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20">
+              {product.images.map((_, imgIndex) => (
+                <div
+                  key={imgIndex}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    imgIndex === (currentImageIndexes[product.id] || 0) ? "bg-gold-500 scale-125" : "bg-cream-200/50"
+                  }`}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="space-y-8"
+          >
+            <h3 className="text-3xl font-zingsans text-burgundy-800 dark:text-cream-100">{product.name}</h3>
+
+            <p className="text-lg text-burgundy-700 dark:text-cream-200">{product.description}</p>
+
+            <div className="space-y-4">
+              <h4 className="text-lg font-medium text-burgundy-800 dark:text-cream-100">Select Color:</h4>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => handleColorChange(0)}
+                  className={`w-12 h-12 rounded-full bg-burgundy-700 relative ${
+                    selectedProduct === 0 ? "ring-2 ring-gold-500 ring-offset-2" : ""
+                  }`}
+                  aria-label="Select Burgundy color"
+                >
+                  {selectedProduct === 0 && <Check className="absolute inset-0 m-auto text-white" size={16} />}
+                </button>
+                <button
+                  onClick={() => handleColorChange(1)}
+                  className={`w-12 h-12 rounded-full bg-blue-900 relative ${
+                    selectedProduct === 1 ? "ring-2 ring-gold-500 ring-offset-2" : ""
+                  }`}
+                  aria-label="Select Midnight Blue color"
+                >
+                  {selectedProduct === 1 && <Check className="absolute inset-0 m-auto text-white" size={16} />}
+                </button>
+                <button
+                  onClick={() => handleColorChange(2)}
+                  className={`w-12 h-12 rounded-full bg-gray-900 relative ${
+                    selectedProduct === 2 ? "ring-2 ring-gold-500 ring-offset-2" : ""
+                  }`}
+                  aria-label="Select Black color"
+                >
+                  {selectedProduct === 2 && <Check className="absolute inset-0 m-auto text-white" size={16} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <p className="text-3xl font-zingsans text-gold-500 mb-2">{product.price}</p>
+              <p className="text-burgundy-600 dark:text-cream-300 text-sm">Limited Stock Available</p>
+            </div>
+
+            <div className="pt-4">
+              <Link href="#order">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-gold-500 text-burgundy-950 px-6 py-3 text-sm uppercase tracking-widest hover:bg-gold-400 transition-colors duration-300 w-full rounded-sm font-medium"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="bg-gold-500 text-burgundy-950 px-8 py-4 text-lg uppercase tracking-widest hover:bg-gold-400 transition-all duration-300 w-full rounded-sm"
                 >
                   Secure Yours Now
                 </motion.button>
               </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+            </div>
 
-      {selectedProduct !== null && (
-        <ImageGallery
-          images={products[selectedProduct].images}
-          isOpen={galleryOpen}
-          onClose={() => setGalleryOpen(false)}
-          currentIndex={currentImageIndexes[selectedProduct + 1] || 0}
-          onIndexChange={(index) =>
-            setCurrentImageIndexes((prev) => ({
-              ...prev,
-              [selectedProduct + 1]: index,
-            }))
-          }
-        />
-      )}
+            <div className="flex flex-wrap justify-center gap-6 pt-4">
+              <div className="w-16 h-8 bg-white rounded flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                <span className="text-xs font-bold text-gray-800">STRIPE</span>
+              </div>
+              <div className="w-20 h-8 bg-white rounded flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                <span className="text-xs font-bold text-gray-800">PAYSTACK</span>
+              </div>
+              <div className="w-16 h-8 bg-white rounded flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                <span className="text-xs font-bold text-gray-800">PAYPAL</span>
+              </div>
+              <div className="w-16 h-8 bg-white rounded flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                <span className="text-xs font-bold text-gray-800">WISE</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {selectedProduct !== null && (
+          <ImageGallery
+            images={products[selectedProduct].images}
+            isOpen={galleryOpen}
+            onClose={() => setGalleryOpen(false)}
+            currentIndex={currentImageIndexes[products[selectedProduct].id] || 0}
+            onIndexChange={(index) =>
+              setCurrentImageIndexes((prev) => ({
+                ...prev,
+                [products[selectedProduct].id]: index,
+              }))
+            }
+          />
+        )}
+      </div>
     </section>
   )
 }
