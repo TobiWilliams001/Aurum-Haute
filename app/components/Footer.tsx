@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { Instagram, Facebook, TwitterIcon as TikTok, ShieldCheck, Truck, CreditCard } from "lucide-react"
+import { Instagram, Facebook, ShieldCheck, Truck, CreditCard } from "lucide-react"
 
 export default function Footer() {
   return (
@@ -39,7 +39,16 @@ export default function Footer() {
                 className="bg-burgundy-500 text-white p-2 rounded-full hover:bg-burgundy-600 transition-colors duration-300"
                 aria-label="Follow us on TikTok"
               >
-                <TikTok size={20} />
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="fill-current"
+                >
+                  <path d="M19.321 5.562a5.124 5.124 0 0 1-3.414-1.267 5.124 5.124 0 0 1-1.537-3.168h-3.766v13.206c0 .625-.263 1.184-.684 1.591a2.363 2.363 0 0 1-1.68.695c-1.306 0-2.364-1.058-2.364-2.364 0-1.306 1.058-2.364 2.364-2.364.214 0 .421.029.618.084v-3.86a6.175 6.175 0 0 0-1.796-.013c-1.625.233-3.098 1.127-4.028 2.446a6.129 6.129 0 0 0-.64 5.87 6.13 6.13 0 0 0 3.476 3.313c1.249.483 2.58.483 3.829 0a6.13 6.13 0 0 0 3.476-3.313 6.128 6.128 0 0 0 .582-2.39V9.273c1.234.836 2.695 1.33 4.273 1.33v-3.771a5.126 5.126 0 0 1-1.709-.27z" />
+                </svg>
               </button>
             </Link>
           </div>
